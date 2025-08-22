@@ -1,36 +1,447 @@
-<section>
-  {% if search.performed %}
-    <h1>search page</h1>
-    <div>
-      {% for result in search.results %}
-        <p>{{ result.object_type }}</p>
-      {% endfor %}
-    {% else %}
-      <h1>not results found!</h1>
+{% assign query = request.params.q %}
+
+<section class="collection-sec">
+  <div class="collection-header">
+    <div class="collection-text">
+      {% if search.performed %}
+        <h1>Results for "{{ search.terms }}"</h1>
+      {% else %}
+        <h1>Please enter a search term</h1>
+      {% endif %}
     </div>
-  {% endif %}
+
+    <button id="sort-toggle" class="sort-button">
+      SORT
+      <img
+        src="{{ 'sort.png' | asset_url }}"
+        alt="Sort"
+        class="sort-icon">
+    </button>
+  </div>
+
+  {% paginate search.results by 12 %}
+    <div class="products-grid">
+      {% for item in search.results %}
+        {% if item.object_type == 'product' %}
+          <div class="product-card">
+            <div class="image-wrapper">
+              <a href="{{ item.url }}">
+                <img
+                  width="600"
+                  height="800"
+                  loading="lazy"
+                  src="{{ item.featured_image | image_url: width: 600, height: 800 }}">
+              </a>
+            </div>
+            <a href="{{ item.url }}" class="product-info">
+              <div class="product-title">{{ item.title }}</div>
+              <div class="product-price">
+                {% if item.compare_at_price > item.price %}
+                  <span class="current-price has-discount">{{ item.price | money }}</span>
+                  <span class="old-price">{{ item.compare_at_price | money }}</span>
+                {% else %}
+                  <span class="current-price">{{ item.price | money }}</span>
+                {% endif %}
+              </div>
+            </a>
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+
+    <div class="custom-pagination">
+      {% if paginate.previous %}
+        <a href="{{ paginate.previous.url }}" class="pagination-arrow">&larr;</a>
+      {% else %}
+        <span class="pagination-arrow disabled">&larr;</span>
+      {% endif %}
+
+      <span class="pagination-info">
+        Page {{ paginate.current_page }} of {{ paginate.pages }}
+      </span>
+
+      {% if paginate.next %}
+        <a href="{{ paginate.next.url }}" class="pagination-arrow">&rarr;</a>
+      {% else %}
+        <span class="pagination-arrow disabled">&rarr;</span>
+      {% endif %}
+    </div>
+  {% endpaginate %}
 </section>
 
-{% schema %}
-  {
-    "name": "search",
-    "settings": [
-      {
-        "type": "color",
-        "id": "background",
-        "label": "Background",
-        "default": "#F4F4F4"
-      }, {
-        "type": "color",
-        "id": "text_color",
-        "label": "Text",
-        "default": "#000000"
-      }
-    ],
-    "presets": [
-      {
-        "name": "search"
-      }
-    ]
+
+<style>
+  .collection-sec {
+    background: {{ section.settings.background }}
+    ;
+    color: {{ section.settings.text_color }}
+    ;
+    padding: 10px;
   }
-{% endschema %}
+
+  .collection-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 20px;
+  }
+
+  .collection-text {
+    max-width: 500px;
+  }
+
+  .collection-header h1 {
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 5px;
+    letter-spacing: 1px;
+    margin-left: 100px;
+  }
+
+  .collection-description {
+    margin-left: 100px;
+    font-size: 16px;
+    color: #555;
+    line-height: 1.5;
+    letter-spacing: 1px;
+    margin-bottom: 0;
+    font-weight: normal;
+  }
+
+  .sort-button {
+    padding: 16px 30px;
+    margin-right: 100px;
+    background-color: #1A237E;
+    color: white;
+    border: none;
+    border-radius: 30px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: opacity 0.3s ease;
+    letter-spacing: 0.5px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .sort-button:hover {
+    opacity: 0.8;
+  }
+
+  .products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 250px);
+    gap: 20px;
+    justify-content: center;
+    margin: 0 auto;
+  }
+
+
+  .product-card {
+    max-width: 250px;
+    margin: 0 auto;
+  }
+
+  .image-wrapper {
+    width: 100%;
+    aspect-ratio: 3 / 4;
+    overflow: hidden;
+    background: #f5f5f5;
+  }
+
+  .image-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .product-info {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+  }
+  .product-title {
+    color: #000;
+    font-size: 13px;
+    font-weight: 500;
+    margin-top: 10px;
+  }
+
+  .product-price {
+    font-size: 13px;
+    margin-top: 4px;
+    display: flex;
+    gap: 5px;
+    align-items: center;
+  }
+
+  .product-price .old-price {
+    text-decoration: line-through;
+    color: #888;
+    font-size: 12px;
+  }
+
+  .product-price .current-price {
+    color: #000;
+    font-weight: 500;
+    font-size: 13px;
+  }
+
+  .product-price .current-price.has-discount {
+    color: red;
+  }
+
+  .custom-pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 60px;
+    margin-bottom: 10px;
+    gap: 10px;
+    font-family: Arial, sans-serif;
+  }
+
+  .pagination-arrow {
+    display: inline-block;
+    padding: 10px 15px;
+    background-color: #1A237E;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+    transition: opacity 0.2s;
+  }
+
+  .pagination-arrow:hover {
+    opacity: 0.8;
+  }
+
+  .pagination-arrow.disabled {
+    background-color: #ccc;
+    cursor: default;
+    pointer-events: none;
+  }
+
+  .pagination-info {
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  .sort-panel {
+    position: fixed;
+    top: 0;
+    right: -400px;
+    width: 350px;
+    height: 100%;
+    background: #fff;
+    box-shadow: -2px 0 8px rgba(0, 0, 0, 0.2);
+    z-index: 1001;
+    padding: 20px;
+    transition: right 0.3s ease;
+  }
+
+  .sort-panel.open {
+    right: 0;
+  }
+
+  .sort-panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 10px;
+  }
+
+  .sort-panel-header h2 {
+    font-size: 18px;
+    font-weight: bold;
+  }
+  .close-btn {
+    cursor: pointer;
+    font-size: 20px;
+  }
+
+  .sort-subtitle {
+    margin-top: 20px;
+    font-size: 14px;
+    font-weight: 200;
+    color: #555;
+  }
+
+  .size-buttons-wrapper {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 10px;
+    margin-top: 10px;
+  }
+
+  .size-button {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    padding: 14px 4px;
+    min-width: auto;
+    background: #f8f8f8;
+    cursor: pointer;
+    border: 1px solid transparent;
+    font-size: 13px;
+    transition: border 0.2s, background 0.2s;
+    user-select: none;
+    position: relative;
+  }
+
+  .size-button input[type="radio"] {
+    display: none;
+  }
+
+  .size-button:hover {
+    border: 1px solid #000;
+  }
+
+  .size-button.active {
+    border: 2px solid #000;
+  }
+
+  .size-button span {
+    pointer-events: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .sort-button .sort-icon {
+    width: 15px;
+    height: 15px;
+    margin-left: 8px;
+  }
+
+  #apply-sort {
+    margin-top: 20px;
+    width: 100%;
+    border-top: 1px solid #ddd;
+    padding-top: 12px;
+  }
+
+  .sort-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+
+  .sort-overlay.active {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .sort-divider {
+    border-top: 1px solid #ddd;
+    margin: 20px 0 10px;
+  }
+
+  @media(max-width: 1024px) {
+    .products-grid {
+      max-width: 790px;
+    }
+  }
+
+  @media(max-width: 768px) {
+    .collection-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 15px;
+    }
+
+    .sort-button {
+      margin-right: 0;
+      margin-top: 10px;
+      margin-left: 10px;
+    }
+
+    .collection-header h1 {
+      margin-left: 10px;
+    }
+
+    .collection-description {
+      margin-left: 10px;
+    }
+
+    .products-grid {
+      max-width: 520px;
+    }
+  }
+
+  @media(max-width: 480px) {
+    .products-grid {
+      max-width: 250px;
+    }
+
+    .image-wrapper {
+      aspect-ratio: auto;
+      height: auto;
+    }
+
+    .image-wrapper img {
+      height: auto;
+    }
+
+    .sort-button {
+      width: 100%;
+    }
+  }
+
+
+}
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const sortBtn = document.getElementById('sort-toggle');
+    const sortPanel = document.getElementById('sort-panel');
+    const sortClose = document.getElementById('sort-close');
+    const overlay = document.getElementById('sort-overlay');
+    const applySort = document.getElementById('apply-sort');
+
+    sortBtn.addEventListener('click', () => {
+      sortPanel.classList.add('open');
+      overlay.classList.add('active');
+    });
+
+    overlay.addEventListener('click', closePanel);
+    sortClose.addEventListener('click', closePanel);
+
+    function closePanel() {
+      sortPanel.classList.remove('open');
+      overlay.classList.remove('active');
+    }
+
+    applySort.addEventListener('click', () => {
+      const selectedOption = document.querySelector('input[name="sort-option"]:checked');
+      if (selectedOption) {
+        const currentUrl = new URL(window.location.href);
+        currentUrl.searchParams.set('sort_by', selectedOption.value);
+        window.location.href = currentUrl.toString();
+      }
+    });
+
+    const sizeButtons = document.querySelectorAll('.size-button');
+    sizeButtons.forEach(btn => {
+      const input = btn.querySelector('input[type="radio"]');
+      input.addEventListener('change', () => {
+        sizeButtons.forEach(b => b.classList.remove('active'));
+        if (input.checked) 
+          btn.classList.add('active');
+        
+
+
+      });
+    });
+  });
+</script>

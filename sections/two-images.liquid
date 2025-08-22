@@ -1,5 +1,5 @@
 <section>
-  <div class="three-images-wrapper">
+  <div class="two-images-wrapper">
     {% if section.settings.image != blank %}
       <div class="one-user">
         <h1></h1>
@@ -19,100 +19,84 @@
         <h1></h1>
       </div>
     {% endif %}
-
-    {% if section.settings.image3 != blank %}
-      <div class="three-user">
-        <h1></h1>
-      </div>
-    {% else %}
-      <div class="three">
-        <h1></h1>
-      </div>
-    {% endif %}
   </div>
 </section>
 
 <style>
-
-
-  .three-images-wrapper {
+  .two-images-wrapper {
     display: flex;
+    position: relative;
   }
 
   .one {
-    background-image: url(" {{'one.png' | asset_url}}");
-    width: 33.333%;
-    height: 500px;
+    background-image: url(" {{'first_picture.jpg' | asset_url}}");
+    width: 50%;
+    height: 720px;
     background-size: cover;
     background-position: center;
   }
 
   .one-user {
     background-image: url(" {{section.settings.image | image_url}}");
-    width: 33.333%;
-    height: 500px;
+    width: 50%;
+    height: 720px;
     background-size: cover;
     background-position: center;
   }
 
   .two {
-    background-image: url(" {{'two.png' | asset_url}}");
-    width: 33.333%;
-    height: 500px;
+    background-image: url(" {{'second_picture.jpg' | asset_url}}");
+    width: 50%;
+    height: 720px;
     background-size: cover;
     background-position: center;
   }
 
   .two-user {
     background-image: url(" {{section.settings.image2 | image_url}}");
-    width: 33.333%;
-    height: 500px;
+    width: 50%;
+    height: 720px;
     background-size: cover;
     background-position: center;
   }
 
-  .three {
-    background-image: url(" {{'three.png' | asset_url}}");
-    width: 33.333%;
-    height: 500px;
-    background-size: cover;
-    background-position: center;
-  }
+  @media screen and (max-width: 1100px) {
+    .two-images-wrapper {
+      flex-direction: column;
+    }
 
-  .three-user {
-    background-image: url(" {{section.settings.image3 | image_url}}");
-    width: 33.333%;
-    height: 500px;
-    background-size: cover;
-    background-position: center;
+    .two,
+    .two-user {
+      display: none;
+    }
+
+    .one,
+    .one-user {
+      width: 100%;
+    }
   }
 </style>
 
 {% schema %}
   {
-    "name": "three-images",
+    "name": "two-images",
     "settings": [
       {
         "type": "image_picker",
         "id": "image",
-        "label": "pick image",
+        "label": "Pick image 1",
         "info": "400 x 120px .png recommended format"
       }, {
         "type": "image_picker",
         "id": "image2",
-        "label": "pick image",
-        "info": "400 x 120px .png recommended format"
-      }, {
-        "type": "image_picker",
-        "id": "image3",
-        "label": "pick image",
+        "label": "Pick image 2",
         "info": "400 x 120px .png recommended format"
       }
     ],
     "blocks": [],
     "presets": [
       {
-        "name": "three-images"
+        "name": "two-images"
       }
     ]
   }

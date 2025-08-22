@@ -1,84 +1,201 @@
 <section class="all-collections">
   <h1>Featured Collections</h1>
-  <div class="collections-container">
-    <div class="collection-wrapper">
-
+  <div class="collections-wrapper">
+    <button class="scroll-btn left">
+      <img src="{{ 'left.png' | asset_url }}" alt="left">
+    </button>
+    <div class="collections-container">
       {% for collection in collections %}
-        <div class="collection-card">
-          <img
-            width="300"
-            height="300"
-            loading="lazy"
-            src="{{collection.featured_image | image_url}}">
-          <h3>{{ collection.title | link_to: collection.url }}</h3>
-        </div>
-
+        {% unless collection.title == 'Women' or collection.title == 'Men' or collection.title == 'Kids' or collection.title == 'Sale' %}
+          <div class="collection-card">
+            <div class="image-wrapper">
+              <a href="{{ collection.url }}">
+                <img
+                  width="400"
+                  height="500"
+                  loading="lazy"
+                  src="{{ collection.featured_image | image_url }}">
+              </a>
+              <a href="{{ collection.url }}">
+                <button>{{ collection.title }}</button>
+              </a>
+            </div>
+          </div>
+        {% endunless %}
       {% endfor %}
-
-
     </div>
+    <button class="scroll-btn right">
+      <img src="{{ 'right.png' | asset_url }}" alt="right">
+    </button>
   </div>
 </section>
 
 <style>
   .all-collections {
-    background: {{ section.settings.background}}
+    background: {{ section.settings.background }}
     ;
-    color: {{ section.settings.text_color}}
+    color: {{ section.settings.text_color }}
     ;
-    padding: 10px;
-  }
-
-  .collection-container {
+    padding: 20px 0;
     position: relative;
-    overflow-x: scroll;
   }
 
-  .all-collections-wrapper {
-    display: flex;
-    transition: transform 0.3s ease;
+  .all-collections h1 {
+    font-size: 24px;
+    font-weight: normal;
+    margin-bottom: 20px;
+    letter-spacing: 1px;
+    margin-left: 10px;
   }
 
-  .collection-card {
-    padding: 5px;
-    box-sizing: border-box;
+  .collections-wrapper {
+    position: relative;
     display: flex;
-    flex-direction: column;
-    justify-content: center;
     align-items: center;
   }
 
-  .collection-card h3 a {
-    color: black;
-    text-decoration: none;
+  .collections-container {
+    display: flex;
+    overflow-x: auto;
+    scroll-behavior: smooth;
   }
 
-  .collection-card a:hover {
-    text-decoration: underline;
+  .collection-card {
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: column;
+    min-width: 400px;
+    pointer-events: auto;
+  }
+
+  .image-wrapper {
+    position: relative;
+    width: 400px;
+    height: 500px;
+  }
+
+  .image-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 0;
+    display: block;
+  }
+
+  .image-wrapper button {
+    position: absolute;
+    left: 30px;
+    bottom: 30px;
+    padding: 15px 40px;
+    background-color: white;
+    border: none;
+    color: black;
+    border-radius: 30px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: opacity 0.3s ease;
+    letter-spacing: 1px;
+    z-index: 2;
+  }
+
+  .image-wrapper button:hover {
+    opacity: 0.8;
+  }
+
+  .image-wrapper::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.00), rgba(0,0,0,0.3));
+    z-index: 1;
+  }
+
+  .scroll-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: white;
+    border: none;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 20;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    transition: opacity 0.3s ease;
+  }
+
+  .scroll-btn.left {
+    left: 10px;
+  }
+
+  .scroll-btn.right {
+    right: 10px;
+  }
+
+  .scroll-btn img {
+    width: 12px;
+    height: 12px;
+  }
+
+  .scroll-btn.hidden {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .collections-container::-webkit-scrollbar {
+    display: none;
+  }
+  .collections-container {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
   }
 </style>
 
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const wrappers = document.querySelectorAll('.collections-wrapper');
 
-{% schema %}
-  {
-    "name": "all-collections",
-    "settings": [
-      {
-        "type": "color",
-        "id": "background",
-        "label": "Background",
-        "default": "#F4F4F4"
-      }, {
-        "type": "color",
-        "id": "text_color",
-        "label": "Text",
-        "default": "#000000"
-      }
-    ],
-    "presets": [
-      {
-        "name": "all-collections"
-      }
-    ]
-  }
-{% endschema %}
+    wrappers.forEach(wrapper => {
+      const container = wrapper.querySelector('.collections-container');
+      const btnLeft = wrapper.querySelector('.scroll-btn.left');
+      const btnRight = wrapper.querySelector('.scroll-btn.right');
+
+      const updateButtons = () => {
+        const scrollLeft = container.scrollLeft;
+        const maxScrollLeft = container.scrollWidth - container.clientWidth;
+
+        if (scrollLeft <= 0) {
+          btnLeft.classList.add('hidden');
+        } else {
+          btnLeft.classList.remove('hidden');
+        }
+
+        if (scrollLeft >= maxScrollLeft) {
+          btnRight.classList.add('hidden');
+        } else {
+          btnRight.classList.remove('hidden');
+        }
+      };
+
+      btnLeft.addEventListener('click', () => {
+        container.scrollBy({left: -400, behavior: 'smooth'});
+      });
+
+      btnRight.addEventListener('click', () => {
+        container.scrollBy({left: 400, behavior: 'smooth'});
+      });
+
+      container.addEventListener('scroll', updateButtons);
+
+      updateButtons();
+    });
+  });
+</script>

@@ -1,0 +1,221 @@
+<section class="newest-finds">
+  <h1>Newest Finds</h1>
+  <div class="collections-wrapper">
+    <button class="scroll-btn left">
+      <img src="{{ 'left.png' | asset_url }}" alt="left">
+    </button>
+    <div class="collections-container">
+      {% assign new_collection = collections['new'] %}
+      {% if new_collection %}
+        {% for product in new_collection.products %}
+          <div class="collection-card">
+            <div class="image-wrapper">
+              <a href="{{ product.url }}">
+                <img
+                  width="300"
+                  height="400"
+                  loading="lazy"
+                  src="{{ product.featured_image | image_url }}">
+              </a>
+            </div>
+            <a href="{{ product.url }}" class="collection-info">
+              <div class="collection-title">{{ product.title }}</div>
+              <div class="collection-price">
+                {% if product.compare_at_price > product.price %}
+                  <span class="current-price has-discount">{{ product.price | money }}</span>
+                  <span class="old-price">{{ product.compare_at_price | money }}</span>
+                {% else %}
+                  <span class="current-price">{{ product.price | money }}</span>
+                {% endif %}
+              </div>
+            </a>
+          </div>
+        {% endfor %}
+      {% endif %}
+    </div>
+    <button class="scroll-btn right">
+      <img src="{{ 'right.png' | asset_url }}" alt="right">
+    </button>
+  </div>
+</section>
+
+<style>
+  .newest-finds {
+    background: {{ section.settings.background }}
+    ;
+    color: {{ section.settings.text_color }}
+    ;
+    padding: 20px 10px;
+    position: relative;
+  }
+
+  .newest-finds h1 {
+    font-size: 24px;
+    font-weight: normal;
+    margin-bottom: 20px;
+    letter-spacing: 1px;
+    margin-left: 10px;
+  }
+
+  .newest-finds .image-wrapper {
+    width: 300px;
+    height: 400px;
+    overflow: hidden;
+  }
+
+
+  .newest-finds .image-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .newest-finds .image-wrapper::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.00), rgba(0,0,0,0.3));
+    z-index: 1;
+  }
+
+  .newest-finds .collection-title {
+    color: #000;
+    font-size: 13px;
+    font-weight: 500;
+    margin-top: 10px;
+  }
+
+  .newest-finds .collection-price {
+    font-size: 13px;
+    margin-top: 4px;
+    display: flex;
+    gap: 5px;
+    align-items: center;
+  }
+
+  .newest-finds .collection-price .old-price {
+    text-decoration: line-through;
+    color: #888;
+    font-size: 12px;
+  }
+
+  .newest-finds .collection-price .current-price {
+    color: #000;
+    font-weight: 500;
+    font-size: 13px;
+  }
+
+  .newest-finds .collection-price .current-price.has-discount {
+    color: red;
+  }
+
+  .newest-finds .scroll-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: white;
+    border: none;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 20;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    transition: opacity 0.3s ease;
+  }
+
+  .newest-finds .scroll-btn.left {
+    left: 20px;
+  }
+  .newest-finds .scroll-btn.right {
+    right: 20px;
+  }
+
+  .newest-finds .scroll-btn img {
+    width: 12px;
+    height: 12px;
+  }
+  .newest-finds .scroll-btn.hidden {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .newest-finds .collections-container {
+    display: flex;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+  }
+
+  .newest-finds .collection-info {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+  }
+
+
+  .newest-finds .collections-container::-webkit-scrollbar {
+    display: none;
+  }
+  .newest-finds .collections-container {
+    display: flex;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    gap: 20px;
+    padding-bottom: 10px;
+    margin-left: 20px;
+  }
+
+  .newest-finds .collection-card {
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: column;
+    min-width: 300px;
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const wrappers = document.querySelectorAll('.newest-finds .collections-wrapper');
+
+    wrappers.forEach(wrapper => {
+      const container = wrapper.querySelector('.collections-container');
+      const btnLeft = wrapper.querySelector('.scroll-btn.left');
+      const btnRight = wrapper.querySelector('.scroll-btn.right');
+
+      const updateButtons = () => {
+        const scrollLeft = container.scrollLeft;
+        const maxScrollLeft = container.scrollWidth - container.clientWidth;
+
+        if (scrollLeft <= 0) 
+          btnLeft.classList.add('hidden');
+         else 
+          btnLeft.classList.remove('hidden');
+        
+
+        if (scrollLeft >= maxScrollLeft) 
+          btnRight.classList.add('hidden');
+         else 
+          btnRight.classList.remove('hidden');
+        
+      };
+
+      btnLeft.addEventListener('click', () => {
+        container.scrollBy({left: -400, behavior: 'smooth'});
+      });
+      btnRight.addEventListener('click', () => {
+        container.scrollBy({left: 400, behavior: 'smooth'});
+      });
+
+      container.addEventListener('scroll', updateButtons);
+      updateButtons();
+    });
+  });
+</script>

@@ -1,73 +1,522 @@
 <header class="header-nav">
-  <div>
-    <a href="/">
-      <img
-        width="80"
-        height="50"
-        loading="lazy"
-        src={{'nike.png' | asset_url}}></a>
-  </div>
-  <div>
+
+  <div class="left-nav">
     <ul class="middle-nav-links">
       {% for link in linklists['main-menu'].links %}
-        <li>{{ link.title | link_to: link.url }}</li>
+        <li class="{% if link.active %}active{% endif %}">
+          <a href="{{ link.url }}">{{ link.title }}</a>
+        </li>
       {% endfor %}
     </ul>
+
+    <div class="mobile-menu-icon">
+      <img src="{{ 'menu.png' | asset_url }}" alt="menu">
+    </div>
   </div>
+
+  <div class="center-nav">
+    <a href="/">MYSHOP</a>
+  </div>
+
   <div class="right-nav-items">
-    <form action="/serach">
+    <form action="/search" class="search-wrapper">
       <input
         class="search-nav"
+        name="q"
         placeholder="search"
         type="search">
     </form>
-    <a href="/cart">
-      <img
-        width="40"
-        height="40"
-        loading="lazy"
-        src={{'d.png' | asset_url}}></a>
 
+    <a
+      href="#"
+      class="cart-icon"
+      id="cart-toggle">
+      <img
+        width="23"
+        height="23"
+        loading="lazy"
+        object-fit="contain"
+        src="{{ 'cart.png' | asset_url }}">
+    </a>
+  </div>
+
+  <div class="mobile-dropdown">
+    <ul>
+      {% for link in linklists['main-menu'].links %}
+        <li>
+          <a href="{{ link.url }}" class="mobile-link">
+            {{ link.title }}
+            <span class="arrow">→</span>
+          </a>
+        </li>
+
+      {% endfor %}
+    </ul>
   </div>
 </header>
 
+<div id="cart-overlay" class="cart-overlay"></div>
+
+<div id="cart-panel" class="cart-panel">
+  <button id="cart-close" class="cart-close">×</button>
+
+  <h2>
+    CART
+  </h2>
+
+  <hr class="cart-divider">
+
+  <div class="cart-items">
+    {% if cart.item_count > 0 %}
+      <h3 class="cart-subtitle">
+        Your cart contains {{ cart.item_count }} item{% if cart.item_count > 1 %}s{% endif %}
+      </h3>
+      {% for item in cart.items %}
+        <div class="cart-item">
+          <img
+            class="cart-item-image"
+            src="{{ item.image | img_url: 'small' }}"
+            alt="{{ item.product.title }}">
+
+          <div class="cart-item-details">
+            <div class="cart-item-top">
+              <div>
+                <span class="cart-item-title">{{ item.product.title }}</span>
+                {% if item.variant.options.size %}
+                  <span class="cart-item-variant">Size: {{ item.variant.options.size }}</span>
+                {% endif %}
+              </div>
+              <span class="cart-item-price">{{ item.line_price | money }}</span>
+            </div>
+
+            <div class="cart-item-quantity">
+              <button class="quantity-btn decrease" data-line="{{ forloop.index }}">-</button>
+              <span class="quantity-number">{{ item.quantity }}</span>
+              <button class="quantity-btn increase" data-line="{{ forloop.index }}">+</button>
+            </div>
+          </div>
+        </div>
+        <hr class="cart-divider">
+      {% endfor %}
+    {% else %}
+      <h3 class="cart-subtitle">Your cart is empty</h3>
+    {% endif %}
+  </div>
+
+  <div class="cart-summary">
+    <span class="subtotal-label">Subtotal</span>
+    <span class="subtotal-price">{{ cart.total_price | money }}</span>
+  </div>
+
+  <button
+    type="button"
+    class="checkout-btn sort-button"
+    onclick="window.location='/checkout'">
+    CHECKOUT
+  </button>
+</div>
+
 <style>
+  .qty-btn {
+    width: 28px;
+    height: 28px;
+    border: 1px #000;
+    background: #fff;
+    cursor: pointer;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border-radius: 0;
+    transition: background 0.2s ease;
+  }
 
+  .qty-btn:hover {
+    background: #f0f0f0;
+  }
 
-  .header-nav {
+  .cart-divider {
+    border: none;
+    border-top: 1px solid #ddd;
+    margin: 20px;
+  }
+
+  .cart-item {
+    display: flex;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .cart-item-image {
+    width: 100px;
+    height: 150px;
+    object-fit: cover;
+  }
+
+  .cart-item-top {
     display: flex;
     justify-content: space-between;
-    margin: 0;
-    padding: 0 30px;
+    width: 100%;
+    align-items: flex-start;
+  }
+
+  .cart-item-details {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .cart-item-title {
+    font-weight: bold;
+    font-size: 13px;
+    color: #000;
+  }
+
+  .cart-item-variant {
+    font-weight: 200;
+    font-size: 13px;
+    color: #555;
+    margin-top: 2px;
+  }
+
+  .cart-item-quantity {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 15px;
+  }
+
+  .quantity-btn {
+    width: 18px;
+    height: 18px;
+    border: 1px solid #ccc;
+    background: #f7f7f7;
+    cursor: pointer;
+    font-size: 13px;
+    line-height: 22px;
+    text-align: center;
+  }
+
+  .quantity-number {
+    min-width: 20px;
+    text-align: center;
+    font-weight: 500;
+  }
+
+  .cart-item-price {
+    font-weight: 500;
+    font-size: 13px;
+    color: #555;
+    margin-left: 10px;
+    white-space: nowrap;
+  }
+
+  .cart-summary {
+    display: flex;
+    justify-content: space-between;
+    font-weight: bold;
+    padding: 10px 0;
+    border-top: 1px solid #ddd;
+    margin-top: 20px;
+  }
+
+  .checkout-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 16px 30px;
+    background-color: #1A237E;
+    color: white;
+    border: none;
+    border-radius: 30px;
+    font-size: 12px;
+    cursor: pointer;
+    margin-top: 15px;
+  }
+  .cart-panel h2 {
+    font-size: 18px;
+    font-weight: bold;
+  }
+
+  .cart-items .cart-subtitle {
+    margin-top: 20px;
+    font-size: 14px;
+    font-weight: 200;
+    color: #555;
+  }
+
+  .header-nav {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0;
     background-color: white;
+  }
+
+  .center-nav {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+  }
+
+  .center-nav a {
+    font-size: 28px;
+    font-weight: bold;
+    color: black;
+    text-decoration: none;
+    letter-spacing: -0.5px;
+  }
+
+  .left-nav {
+    display: flex;
+    align-items: center;
+    gap: 20px;
   }
 
   .middle-nav-links {
     display: flex;
-    font-size: 17px;
-    font-weight: bold;
+    font-size: 13px;
+    font-weight: 500;
+    margin-left: -20px;
   }
 
   .middle-nav-links li {
     padding: 10px;
-    list-style-type: none;
+    list-style: none;
   }
 
   .middle-nav-links a {
     color: inherit;
     text-decoration: none;
+    position: relative;
+    transition: all 0.3s;
+  }
+
+  .middle-nav-links li.active a::after {
+    width: 100%;
+  }
+
+  .middle-nav-links a::after {
+    content: "";
+    position: absolute;
+    width: 0;
+    height: 2px;
+    left: 0;
+    bottom: -2px;
+    background-color: black;
+    transition: width 0.3s ease;
+  }
+
+  .middle-nav-links a:hover::after {
+    width: 100%;
+  }
+
+  .mobile-menu-icon {
+    display: none;
+    cursor: pointer;
+  }
+
+  .mobile-menu-icon img {
+    width: 24px;
+    height: 24px;
   }
 
   .right-nav-items {
     display: flex;
     align-items: center;
+    gap: 30px;
+    margin-top: 6px;
+    margin-right: 20px;
   }
 
   .search-nav {
-    padding: 10px;
-    margin-top: 10px;
-    border-radius: 10px;
+    padding: 4px 10px 4px 30px;
+    border-radius: 20px;
+    border: 1px solid black;
+    background-color: white;
+    background-image: url("{{ 'search.png' | asset_url }}");
+    background-size: 14px 14px;
+    background-repeat: no-repeat;
+    background-position: 10px center;
+    font-size: 14px;
+    outline: none;
+    height: 28px;
+    box-sizing: border-box;
+    width: 200px;
+  }
+
+  .search-nav:focus {
+    border-color: #555;
+  }
+
+  .user-icon,
+  .cart-icon {
+    position: relative;
+    top: -4px;
+  }
+
+  .mobile-dropdown {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    box-sizing: border-box;
+    background: white;
+    z-index: 2000;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .mobile-dropdown.active {
+    display: block;
+  }
+
+  .mobile-dropdown ul li a {
+    font-size: 13px;
+    font-weight: 500;
+    text-decoration: none;
+    color: black;
+    position: relative;
+    transition: all 0.3s;
+    letter-spacing: 1px;
+  }
+
+  .mobile-dropdown ul li a::after {
+    content: "";
+    position: absolute;
+    width: 0;
+    height: 2px;
+    left: 0;
+    bottom: -2px;
+    background-color: black;
+    transition: width 0.3s ease;
+  }
+
+  .mobile-dropdown ul li a:hover::after {
+    width: 100%;
+  }
+
+  .mobile-dropdown ul {
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    gap: 15px;
+  }
+
+  .mobile-dropdown li {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .mobile-dropdown .arrow {
+    font-weight: bold;
+  }
+
+  @media screen and (max-width: 1100px) {
+    .header-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .mobile-menu-icon {
+      display: block;
+      margin-left: 30px;
+    }
+
+    .middle-nav-links {
+      display: none;
+    }
+
+    .mobile-menu-icon {
+      display: block;
+    }
+
+    .left-nav {
+      display: flex;
+      align-items: center;
+      order: 0;
+    }
+
+    .right-nav-items {
+      display: flex;
+      align-items: center;
+      order: 2;
+      gap: 30px;
+    }
+
+    .search-wrapper {
+      flex: 0 0 auto;
+      width: auto;
+    }
+
+    .center-nav {
+      position: relative;
+      left: auto;
+      transform: none;
+    }
+  }
+
+  .cart-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+    z-index: 999;
+  }
+  .cart-overlay.active {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  .cart-panel {
+    position: fixed;
+    top: 0;
+    right: -500px;
+    width: 450px;
+    height: 100%;
+    background: #fff;
+    box-shadow: -2px 0 10px rgba(0, 0, 0, 0.2);
+    transition: right 0.3s ease;
+    z-index: 1002;
+    padding: 20px;
+    box-sizing: border-box;
+  }
+  .cart-panel.open {
+    right: 0;
+  }
+
+  .cart-close {
+    background: none;
     border: none;
-    background-color: rgb(233, 232, 232);
+    font-size: 24px;
+    cursor: pointer;
+    position: absolute;
+    top: 15px;
+    right: 15px;
+  }
+
+  .remove-btn {
+    font-weight: 200;
+    background: none;
+    border: none;
+    color: #555;
+    font-size: 13px;
+    cursor: pointer;
+  }
+
+  .remove-btn:hover {
+    color: #a00;
   }
 </style>

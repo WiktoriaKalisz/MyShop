@@ -5,13 +5,18 @@
             "settings": {}
             
         },
-        "three-images": {
-            "type": "three-images",
+        "two-images": {
+            "type": "two-images",
             "settings": {}
             
         },
         "more-info": {
             "type": "more-info",
+            "settings": {}
+            
+        },
+        "newest-finds": {
+            "type": "newest-finds",
             "settings": {}
             
         },
@@ -28,8 +33,9 @@
     },
     "order":[
         "banner",
-        "three-images",
+        "two-images",
         "more-info",
+        "newest-finds",
         "all-collections",
         "all-products"
     ]

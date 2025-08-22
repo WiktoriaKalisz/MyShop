@@ -4,15 +4,17 @@
     {% if section.settings.text != blank %}
       <h1>{{ section.settings.text }}</h1>
     {% else %}
-      <h1>THE RESOLUTION STARTER PACK</h1>
+      <h1>Chase Endless Adventures</h1>
     {% endif %}
     {% if section.settings.text2 != blank %}
       <p>{{ section.settings.text2 }}</p>
     {% else %}
-      <p>Go for all your fitness goals with a curated collection</p>
+      <p>Handpicked pieces, designed for wherever life takes you.</p>
     {% endif %}
 
-    <button>Shop</button>
+    <a href="/collections/new">
+      <button>Shop now</button>
+    </a>
 
   </div>
 
@@ -20,37 +22,52 @@
 
 <style>
   .more-info {
-    background: {{ section.settings.background }}
-    ;
-    color: {{ section.settings.text_color }}
-    ;
+    position: absolute;
+    top: 55%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+    width: 100%;
     display: flex;
     justify-content: center;
+    text-align: center;
+    color: white;
   }
+
 
   .more-info-wrapper {
     display: flex;
     flex-direction: column;
-    width: 500px;
+    width: 700px;
     justify-content: center;
     align-items: center;
   }
 
   .more-info-wrapper h1 {
-    font-size: 50px;
+    font-size: 48px;
+    font-weight: lighter;
+    font-family: "Times New Roman", Georgia, "Garamond", serif;
+    margin-bottom: -5px;
+  }
+
+  .more-info-wrapper p {
+    margin-bottom: 40px;
+    letter-spacing: 1px;
+    font-weight: 300;
   }
 
   .more-info-wrapper button {
-    padding: 10px 20px;
-    background-color: black;
+    padding: 20px 50px;
+    background-color: white;
     border: none;
-    color: white;
-    border-radius: 20px;
+    color: black;
+    border-radius: 30px;
     cursor: pointer;
+    font-size: 12px;
   }
 
   .more-info-wrapper button:hover {
-    background-color: rgb(185 185 185);
+    opacity: 0.8;
   }
 </style>
 

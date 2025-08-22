@@ -1,12 +1,10 @@
 <section>
   <div class="banner-wrapper">
     <div class="slide-text" id="text1">
-      <p>Members: Free Shipping!</p>
+      <p>Join the Club - Free Shipping for Members</p>
     </div>
-    <div class="slide-text" id="text2">Save up to 40%
-    </div>
-    <div class="slide-text" id="text3">Get your gear faster
-    </div>
+    <div class="slide-text" id="text2">Unlock 15% Off Your First Order - Sign Up Today</div>
+    <div class="slide-text" id="text3">New Drops Weekly - Don't Miss Out</div>
   </div>
 </section>
 
@@ -16,48 +14,45 @@
     ;
     color: {{ section.settings.text_color }}
     ;
+    position: relative;
   }
 
   .slide-text {
     position: absolute;
-    top: 155px;
-    left: -150%;
-    transform: translate(0, -50%);
-    color: black;
+    top: -80px;
+    transform: translate(-50%, -50%);
+    left: 50%;
+    color: white;
     padding: 20px;
-    font-size: 20px;
-    transition: left 0.5s ease-in-out;
+    font-size: 13px;
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+  }
+
+  .slide-text.active {
+    opacity: 1;
   }
 </style>
 
 <script>
   document.addEventListener('DOMContentLoaded', function() {
-    const text1 = document.getElementById('text1');
-    const text2 = document.getElementById('text2');
-    const text3 = document.getElementById('text3');
+    const texts = [document.getElementById('text1'), document.getElementById('text2'), document.getElementById('text3')];
 
-    const texts = [text1, text2, text3];
     let currentIndex = 0;
 
-    function slideToMiddle(element) {
-      element.style.left = '40%';
+    function showText(index) {
+      texts.forEach((t, i) => {
+        t.classList.toggle('active', i === index);
+      });
     }
 
-    function resetPosition(element) {
-      element.style.left = '-100%';
-    }
+    showText(currentIndex);
 
-    function slideText() {
-      resetPosition(texts[currentIndex]);
-      currentIndex = (currentIndex + 1) % texts.length
-      slideToMiddle(texts[currentIndex]);
-    }
-
-    slideToMiddle(texts[currentIndex]);
-
-    setInterval(slideText, 3000);
-
-  })
+    setInterval(() => {
+      currentIndex = (currentIndex + 1) % texts.length;
+      showText(currentIndex);
+    }, 6000);
+  });
 </script>
 
 {% schema %}
