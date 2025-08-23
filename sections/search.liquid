@@ -9,14 +9,6 @@
         <h1>Please enter a search term</h1>
       {% endif %}
     </div>
-
-    <button id="sort-toggle" class="sort-button">
-      SORT
-      <img
-        src="{{ 'sort.png' | asset_url }}"
-        alt="Sort"
-        class="sort-icon">
-    </button>
   </div>
 
   {% paginate search.results by 12 %}
@@ -310,42 +302,6 @@
     align-items: center;
   }
 
-  .sort-button .sort-icon {
-    width: 15px;
-    height: 15px;
-    margin-left: 8px;
-  }
-
-  #apply-sort {
-    margin-top: 20px;
-    width: 100%;
-    border-top: 1px solid #ddd;
-    padding-top: 12px;
-  }
-
-  .sort-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.3);
-    z-index: 1000;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.3s ease;
-  }
-
-  .sort-overlay.active {
-    opacity: 1;
-    pointer-events: auto;
-  }
-
-  .sort-divider {
-    border-top: 1px solid #ddd;
-    margin: 20px 0 10px;
-  }
-
   @media(max-width: 1024px) {
     .products-grid {
       max-width: 790px;
@@ -357,12 +313,6 @@
       flex-direction: column;
       align-items: flex-start;
       gap: 15px;
-    }
-
-    .sort-button {
-      margin-right: 0;
-      margin-top: 10px;
-      margin-left: 10px;
     }
 
     .collection-header h1 {
@@ -391,10 +341,6 @@
     .image-wrapper img {
       height: auto;
     }
-
-    .sort-button {
-      width: 100%;
-    }
   }
 
 
@@ -403,34 +349,6 @@
 
 <script>
   document.addEventListener('DOMContentLoaded', function() {
-    const sortBtn = document.getElementById('sort-toggle');
-    const sortPanel = document.getElementById('sort-panel');
-    const sortClose = document.getElementById('sort-close');
-    const overlay = document.getElementById('sort-overlay');
-    const applySort = document.getElementById('apply-sort');
-
-    sortBtn.addEventListener('click', () => {
-      sortPanel.classList.add('open');
-      overlay.classList.add('active');
-    });
-
-    overlay.addEventListener('click', closePanel);
-    sortClose.addEventListener('click', closePanel);
-
-    function closePanel() {
-      sortPanel.classList.remove('open');
-      overlay.classList.remove('active');
-    }
-
-    applySort.addEventListener('click', () => {
-      const selectedOption = document.querySelector('input[name="sort-option"]:checked');
-      if (selectedOption) {
-        const currentUrl = new URL(window.location.href);
-        currentUrl.searchParams.set('sort_by', selectedOption.value);
-        window.location.href = currentUrl.toString();
-      }
-    });
-
     const sizeButtons = document.querySelectorAll('.size-button');
     sizeButtons.forEach(btn => {
       const input = btn.querySelector('input[type="radio"]');
@@ -439,6 +357,7 @@
         if (input.checked) 
           btn.classList.add('active');
         
+
 
 
       });

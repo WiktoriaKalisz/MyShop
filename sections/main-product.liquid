@@ -30,7 +30,7 @@
                 {% if forloop.first and variant.available %}checked{% endif %}
                 {% unless variant.available %}disabled{% endunless %}>
               <span>
-                {{ variant.title }}
+                {{ variant.title | upcase }}
                 {% unless variant.available %}
                   <small class="no-stock"></small>
                 {% endunless %}
@@ -250,6 +250,7 @@
     if (! form) 
       return;
     
+
 
     const sizeInputs = form.querySelectorAll('input[name="id"]');
     const addToCartBtn = form.querySelector(".add-to-cart");

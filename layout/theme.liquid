@@ -29,8 +29,6 @@
           return;
         
 
-
-
         cartItemsContainer.innerHTML = '';
 
         if (cart.items.length === 0) {
@@ -66,7 +64,7 @@
               ${
               item.variant_title && item.variant_title !== 'Default Title'
                 ? `<span class="cart-item-variant">Size: ${
-                item.variant_title
+                item.variant_title.toUpperCase()
               }</span>` : ''
             }
               <div class="cart-item-quantity">

@@ -93,7 +93,7 @@
             name="sort-option"
             value="{{ option.value }}"
             {% if option.value == sort_by %}checked{% endif %}>
-          <span>{{ display_name }}</span>
+          <span>{{ display_name | upcase }}</span>
         </label>
       {% endfor %}
     </div>
@@ -472,6 +472,7 @@
         if (input.checked) 
           btn.classList.add('active');
         
+
       });
     });
   });
