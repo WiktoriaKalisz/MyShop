@@ -36,10 +36,10 @@ The design of MyShop incorporates few key UX principles to create an intuitive a
 - **Aesthetic-Usability Effect**  
 Clean and visually appealing design with large product imagery makes the shop feel modern and easy to use, increasing perceived usability.
 
-- **Chunking**
+- **Chunking**  
 Products are displayed in consistent cards with grouped details (image, title, price), enabling users to easily scan content.
 
-- **Jakob’s Law**
+- **Jakob’s Law**  
 Navigation and product pages follow familiar e-commerce patterns (menu at the top, product grid, filters, add-to-bag button), reducing the learning curve for users.
 
 - **Von Restorff Effect**  
