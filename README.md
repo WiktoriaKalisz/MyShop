@@ -47,7 +47,7 @@ Discounted prices are highlighted in red, standing out from other text and drawi
 
 ## Run
 
-Go to https://mystorewk.myshopify.com and enter the password: **mystore-demo**
+Go to https://mystorewk.myshopify.com and enter the password: **demo**
 
 ## Preview
 
