@@ -4,15 +4,13 @@ html, body {
     margin: 0;
     font-family: 'Poppins', 'Helvetica', 'Arial', sans-serif;
     letter-spacing: 0.5px;
-    display: flex;        /* układ pionowy */
+    display: flex;
   flex-direction: column;
 }
 
 main {
-    flex: 1; /* zajmuje całą możliwą wysokość, footer spada na dół */
+    flex: 1;
   }
-
-/* announcement barr */
 
 .announcement-bar {
     display: flex;
