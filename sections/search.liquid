@@ -343,24 +343,6 @@
     }
   }
 
-
-}
 </style>
 
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
-    const sizeButtons = document.querySelectorAll('.size-button');
-    sizeButtons.forEach(btn => {
-      const input = btn.querySelector('input[type="radio"]');
-      input.addEventListener('change', () => {
-        sizeButtons.forEach(b => b.classList.remove('active'));
-        if (input.checked) 
-          btn.classList.add('active');
-        
-
-
-
-      });
-    });
-  });
-</script>
+{{ 'search.js' | asset_url | script_tag }}

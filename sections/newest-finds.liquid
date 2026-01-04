@@ -181,41 +181,4 @@
   }
 </style>
 
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
-    const wrappers = document.querySelectorAll('.newest-finds .collections-wrapper');
-
-    wrappers.forEach(wrapper => {
-      const container = wrapper.querySelector('.collections-container');
-      const btnLeft = wrapper.querySelector('.scroll-btn.left');
-      const btnRight = wrapper.querySelector('.scroll-btn.right');
-
-      const updateButtons = () => {
-        const scrollLeft = container.scrollLeft;
-        const maxScrollLeft = container.scrollWidth - container.clientWidth;
-
-        if (scrollLeft <= 0) 
-          btnLeft.classList.add('hidden');
-         else 
-          btnLeft.classList.remove('hidden');
-        
-
-        if (scrollLeft >= maxScrollLeft) 
-          btnRight.classList.add('hidden');
-         else 
-          btnRight.classList.remove('hidden');
-        
-      };
-
-      btnLeft.addEventListener('click', () => {
-        container.scrollBy({left: -400, behavior: 'smooth'});
-      });
-      btnRight.addEventListener('click', () => {
-        container.scrollBy({left: 400, behavior: 'smooth'});
-      });
-
-      container.addEventListener('scroll', updateButtons);
-      updateButtons();
-    });
-  });
-</script>
+{{ 'scrollable.js' | asset_url | script_tag }}

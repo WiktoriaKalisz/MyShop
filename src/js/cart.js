@@ -1,0 +1,158 @@
+export function initCartPanel() {
+  const cartPanel = document.getElementById('cart-panel');
+  const cartOverlay = document.getElementById('cart-overlay');
+  const cartClose = document.getElementById('cart-close');
+  const cartToggle = document.getElementById('cart-toggle');
+
+  if (!cartToggle || !cartPanel || !cartOverlay) return;
+
+  function formatPrice(cents) {
+    if (typeof cents !== 'number' || Number.isNaN(cents)) return '';
+    return (cents / 100).toFixed(2) + ' zł';
+  }
+
+  function updateCartPanel() {
+    fetch('/cart.js')
+      .then(res => res.json())
+      .then(cart => {
+        const cartItemsContainer = cartPanel.querySelector('.cart-items');
+        const subtotalPrice = cartPanel.querySelector('.subtotal-price');
+        if (!cartItemsContainer || !subtotalPrice) return;
+
+        cartItemsContainer.innerHTML = '';
+
+        if (cart.items.length === 0) {
+          cartItemsContainer.innerHTML = '<h3 class="cart-subtitle">Your cart is empty</h3>';
+          subtotalPrice.textContent = '0 zł';
+        } else {
+          cartItemsContainer.innerHTML = `
+            <h3 class="cart-subtitle">Your cart contains ${cart.item_count} item${cart.item_count > 1 ? 's' : ''}</h3>
+          `;
+
+          cart.items.forEach((item, index) => {
+            const div = document.createElement('div');
+            div.className = 'cart-item';
+            div.innerHTML = `
+              <img class="cart-item-image" src="${item.image}" alt="${item.title}">
+              <div class="cart-item-details">
+                <span class="cart-item-title">${item.product_title}</span>
+                ${item.variant_title && item.variant_title !== 'Default Title' ? `<span class="cart-item-variant">Size: ${item.variant_title.toUpperCase()}</span>` : ''}
+                <div class="cart-item-quantity">
+                  <button class="qty-btn minus" data-line="${index + 1}">-</button>
+                  <span class="quantity-number">${item.quantity}</span>
+                  <button class="qty-btn plus" data-line="${index + 1}">+</button>
+                  <button class="remove-btn" data-line="${index + 1}">Remove</button>
+                </div>
+              </div>
+              <span class="cart-item-price">${formatPrice(item.line_price)}</span>
+            `;
+            cartItemsContainer.appendChild(div);
+
+            if (index < cart.items.length - 1) {
+              const hr = document.createElement('hr');
+              hr.className = 'cart-divider';
+              cartItemsContainer.appendChild(hr);
+            }
+          });
+
+          subtotalPrice.textContent = formatPrice(cart.items_subtotal_price);
+        }
+
+        const qtyButtons = cartItemsContainer.querySelectorAll('.qty-btn');
+        qtyButtons.forEach(btn => {
+          btn.addEventListener('click', () => {
+            const line = btn.dataset.line;
+            const isPlus = btn.classList.contains('plus');
+            const currentQty = parseInt(btn.parentElement.querySelector('.quantity-number').textContent, 10);
+            const newQty = isPlus ? currentQty + 1 : Math.max(0, currentQty - 1);
+
+            fetch('/cart/change.js', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ line, quantity: newQty })
+            })
+              .then(res => res.json())
+              .then(() => updateCartPanel())
+              .catch(err => console.error('Błąd:', err));
+          });
+        });
+
+        const removeButtons = cartItemsContainer.querySelectorAll('.remove-btn');
+        removeButtons.forEach(btn => {
+          btn.addEventListener('click', () => {
+            const line = btn.dataset.line;
+            fetch('/cart/change.js', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ line, quantity: 0 })
+            })
+              .then(res => res.json())
+              .then(() => updateCartPanel())
+              .catch(err => console.error('Błąd:', err));
+          });
+        });
+      })
+      .catch(err => console.error('Błąd:', err));
+  }
+
+  const productForms = document.querySelectorAll('form[action*="/cart/add"]');
+  productForms.forEach(productForm => {
+    productForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const formData = new FormData(productForm);
+
+      fetch('/cart/add.js', {
+        method: 'POST',
+        body: formData,
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+      })
+        .then(res => res.json())
+        .then(data => {
+          console.log('Produkt dodany:', data);
+          updateCartPanel();
+          cartPanel.classList.add('open');
+          cartOverlay.classList.add('active');
+        })
+        .catch(err => console.error('Błąd:', err));
+    });
+  });
+
+  cartToggle.addEventListener('click', (e) => {
+    e.preventDefault();
+    cartPanel.classList.add('open');
+    cartOverlay.classList.add('active');
+    updateCartPanel();
+  });
+
+  cartClose.addEventListener('click', () => {
+    cartPanel.classList.remove('open');
+    cartOverlay.classList.remove('active');
+  });
+
+  cartOverlay.addEventListener('click', () => {
+    cartPanel.classList.remove('open');
+    cartOverlay.classList.remove('active');
+  });
+}
+
+export function initMobileMenu() {
+  const menuIcon = document.querySelector('.mobile-menu-icon');
+  const mobileMenu = document.querySelector('.mobile-dropdown');
+
+  if (!menuIcon || !mobileMenu) return;
+
+  menuIcon.addEventListener('click', (e) => {
+    e.stopPropagation();
+    mobileMenu.classList.toggle('active');
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!mobileMenu.contains(e.target) && !menuIcon.contains(e.target)) {
+      mobileMenu.classList.remove('active');
+    }
+  });
+
+  mobileMenu.addEventListener('click', (e) => {
+    e.stopPropagation();
+  });
+}

@@ -244,30 +244,4 @@
   }
 </style>
 
-<script>
-  document.addEventListener("DOMContentLoaded", function() {
-    const form = document.querySelector('#product-form');
-    if (! form) 
-      return;
-    
-
-
-    const sizeInputs = form.querySelectorAll('input[name="id"]');
-    const addToCartBtn = form.querySelector(".add-to-cart");
-
-    function updateButtonState() {
-      const selected = form.querySelector('input[name="id"]:checked');
-      if (selected && ! selected.disabled) {
-        addToCartBtn.disabled = false;
-      } else {
-        addToCartBtn.disabled = true;
-      }
-    }
-
-    sizeInputs.forEach(input => {
-      input.addEventListener("change", updateButtonState);
-    });
-
-    updateButtonState();
-  });
-</script>
+{{ 'main-product.js' | asset_url | script_tag }}

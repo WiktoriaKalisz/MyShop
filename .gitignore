@@ -1,3 +1,19 @@
 node_modules/
 .DS_Store
 .next/
+
+# Environment variables
+.env.local
+.env*.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+Thumbs.db
