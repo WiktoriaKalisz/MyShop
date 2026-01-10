@@ -1,9 +1,12 @@
 import { initCollectionSort, initCollectionSizeFilter } from '../src/js/collection';
 
 describe('Collection Sort', () => {
+  let originalLocation;
+
   beforeEach(() => {
     document.body.innerHTML = `
       <button id="sort-toggle">Sort</button>
+
       <div id="sort-panel">
         <label>
           <input type="radio" name="sort-option" value="newest">
@@ -13,44 +16,76 @@ describe('Collection Sort', () => {
           <input type="radio" name="sort-option" value="price">
           Price
         </label>
+
         <button id="apply-sort">Apply</button>
         <button id="sort-close">Close</button>
       </div>
+
       <div id="sort-overlay"></div>
     `;
-    delete window.location;
-    window.location = { href: 'http://example.com/collections' };
+
+    originalLocation = window.location;
+    Object.defineProperty(window, 'location', {
+      writable: true,
+      value: {
+        href: 'http://example.com/collections',
+      },
+    });
   });
 
-  test('sort panel opens on button click', () => {
-    initCollectionSort();
-    const btn = document.getElementById('sort-toggle');
-    const panel = document.getElementById('sort-panel');
-
-    btn.click();
-    expect(panel.classList.contains('open')).toBe(true);
+  afterEach(() => {
+    window.location = originalLocation;
   });
 
-  test('sort panel closes on close button', () => {
+  test('opens sort panel on toggle click', () => {
     initCollectionSort();
-    const btn = document.getElementById('sort-toggle');
-    const closeBtn = document.getElementById('sort-close');
-    const panel = document.getElementById('sort-panel');
 
-    btn.click();
-    closeBtn.click();
-    expect(panel.classList.contains('open')).toBe(false);
+    document.getElementById('sort-toggle').click();
+
+    expect(
+      document.getElementById('sort-panel').classList.contains('open')
+    ).toBe(true);
+
+    expect(
+      document.getElementById('sort-overlay').classList.contains('active')
+    ).toBe(true);
   });
 
-  test('sort panel closes on overlay click', () => {
+  test('closes sort panel on close button click', () => {
     initCollectionSort();
-    const btn = document.getElementById('sort-toggle');
-    const overlay = document.getElementById('sort-overlay');
-    const panel = document.getElementById('sort-panel');
 
-    btn.click();
-    overlay.click();
-    expect(panel.classList.contains('open')).toBe(false);
+    document.getElementById('sort-toggle').click();
+    document.getElementById('sort-close').click();
+
+    expect(
+      document.getElementById('sort-panel').classList.contains('open')
+    ).toBe(false);
+  });
+
+  test('closes sort panel on overlay click', () => {
+    initCollectionSort();
+
+    document.getElementById('sort-toggle').click();
+    document.getElementById('sort-overlay').click();
+
+    expect(
+      document.getElementById('sort-panel').classList.contains('open')
+    ).toBe(false);
+  });
+
+  test('updates URL with selected sort option on apply', () => {
+    initCollectionSort();
+
+    const priceOption = document.querySelector(
+      'input[name="sort-option"][value="price"]'
+    );
+
+    priceOption.checked = true;
+    document.getElementById('apply-sort').click();
+
+    expect(window.location.href).toBe(
+      'http://example.com/collections?sort_by=price'
+    );
   });
 });
 
@@ -58,18 +93,19 @@ describe('Collection Size Filter', () => {
   beforeEach(() => {
     document.body.innerHTML = `
       <div class="size-button">
-        <input type="radio" name="size">
+        <input type="radio" name="size" />
         Small
       </div>
       <div class="size-button">
-        <input type="radio" name="size">
+        <input type="radio" name="size" />
         Medium
       </div>
     `;
   });
 
-  test('active class toggled on size button', () => {
+  test('toggles active class on size change', () => {
     initCollectionSizeFilter();
+
     const buttons = document.querySelectorAll('.size-button');
     const inputs = document.querySelectorAll('input[type="radio"]');
 

@@ -17,3 +17,12 @@ node_modules/
 
 # OS
 Thumbs.db
+
+# Coverage reports
+coverage/
+coverage/**
+lcov.info
+.nyc_output/
+
+cypress/videos/
+cypress/screenshots/
