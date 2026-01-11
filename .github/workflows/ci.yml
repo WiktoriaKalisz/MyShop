@@ -23,13 +23,20 @@ jobs:
         run: npm ci --legacy-peer-deps
 
       - name: Shopify Theme Check
-        run: npx @shopify/theme-check
+        run: shopify theme check
+
 
       - name: Run ESLint
         run: npm run lint
 
-      - name: Run unit tests with coverage
+      - name: Run JEST unit tests with coverage
         run: npm run test:coverage
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: jest-coverage
+          path: coverage
 
       - name: Run Cypress E2E tests
         uses: cypress-io/github-action@v6
