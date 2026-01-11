@@ -13,7 +13,7 @@ module.exports = {
     '!**/node_modules/**',
     '!**/.next/**'
   ],
-  setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
+  setupFilesAfterEnv: ['<rootDir>/jest.setup.cjs'],
   transform: {
     '^.+\\.js$': 'babel-jest'
   },
