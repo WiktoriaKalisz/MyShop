@@ -23,9 +23,7 @@ jobs:
         run: npm ci --legacy-peer-deps
 
       - name: Install Shopify CLI
-        run: |
-          curl -sS https://shopify.dev/cli/install.sh | bash
-          export PATH=$HOME/.shopify-cli/bin:$PATH
+        run: npm install -g @shopify/cli @shopify/theme
 
       - name: Shopify Theme Check
         run: shopify theme check --config config.yml || true
