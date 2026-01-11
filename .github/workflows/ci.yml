@@ -43,5 +43,5 @@ jobs:
           wait-on: ${{ env.CYPRESS_BASE_URL }}
           wait-on-timeout: 60
         env:
-          CYPRESS_BASE_URL: https://mystorewk.myshopify.com
+          CYPRESS_BASE_URL: http://127.0.0.1:3000
 
